@@ -1,0 +1,326 @@
+/* ── Reset ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Design Tokens ── */
+:root {
+  --terracotta:       #C94F32;
+  --terracotta-light: #F5EAE6;
+  --terracotta-dark:  #A33D22;
+  --bg:               #F7F4EF;
+  --surface:          #FEFCF9;
+  --border:           rgba(180, 160, 140, 0.25);
+  --border-focus:     rgba(201, 79, 50, 0.4);
+  --text-primary:     #2C2219;
+  --text-secondary:   #7A6A5E;
+  --text-muted:       #AFA090;
+  --radius-card:      16px;
+  --radius-input:     12px;
+  --radius-btn:       10px;
+  --shadow-card:      0 2px 12px rgba(80, 50, 30, 0.07), 0 1px 3px rgba(80, 50, 30, 0.06);
+  --shadow-hover:     0 8px 28px rgba(80, 50, 30, 0.13), 0 2px 8px rgba(80, 50, 30, 0.08);
+  --transition:       all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Base ── */
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  color: var(--text-primary);
+  padding: 2.5rem 1.25rem 4rem;
+}
+
+/* ── Layout ── */
+.app-wrapper {
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+/* ── Header ── */
+.app-header {
+  text-align: center;
+  margin-bottom: 2.25rem;
+}
+
+.app-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.8rem, 5vw, 2.4rem);
+  font-weight: 400;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+  line-height: 1.15;
+}
+
+.app-title span {
+  color: var(--terracotta);
+}
+
+.notes-count {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ── Note creation card ── */
+.creation-card {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 1.5rem 1.5rem 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.field-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 7px;
+}
+
+.title-input,
+.content-textarea {
+  width: 100%;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text-primary);
+  background: var(--bg);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-input);
+  padding: 11px 14px;
+  outline: none;
+  transition: var(--transition);
+}
+
+.title-input {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 14px;
+}
+
+.content-textarea {
+  font-size: 14px;
+  line-height: 1.6;
+  resize: vertical;
+  height: 96px;
+  margin-bottom: 14px;
+}
+
+.title-input::placeholder,
+.content-textarea::placeholder {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.title-input:focus,
+.content-textarea:focus {
+  border-color: var(--border-focus);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px rgba(201, 79, 50, 0.08);
+}
+
+/* ── Add button ── */
+.add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--terracotta);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-btn);
+  padding: 11px 22px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.add-btn:hover  { background: var(--terracotta-dark); transform: scale(1.03); }
+.add-btn:active { transform: scale(0.97); }
+.add-btn svg    { width: 16px; height: 16px; }
+
+/* ── Section divider label ── */
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 0.5px;
+  background: var(--border);
+}
+
+/* ── Notes grid ── */
+.notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 14px;
+}
+
+/* ── Note card ── */
+.note-card {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 1rem 1rem 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+/* Coloured top stripe */
+.note-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: var(--accent, var(--terracotta));
+  border-radius: 4px 4px 0 0;
+  opacity: 0.75;
+}
+
+.note-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+  border-color: rgba(201, 79, 50, 0.18);
+}
+
+/* Rotating accent colours for static cards */
+.note-card:nth-child(1) { --accent: #C94F32; }
+.note-card:nth-child(2) { --accent: #B0763C; }
+.note-card:nth-child(3) { --accent: #5B8A72; }
+.note-card:nth-child(4) { --accent: #6A7BAF; }
+.note-card:nth-child(5) { --accent: #9A5B8A; }
+.note-card:nth-child(6) { --accent: #7A884A; }
+
+.note-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+  margin-top: 5px;
+}
+
+.note-card-content {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  flex: 1;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.note-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: 0.5px solid var(--border);
+}
+
+.note-date {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.note-date svg { width: 12px; height: 12px; }
+
+/* ── Card action buttons ── */
+.card-actions { display: flex; gap: 5px; }
+
+.icon-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 0.5px solid var(--border);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--text-muted);
+}
+
+.icon-btn svg         { width: 14px; height: 14px; }
+.icon-btn:hover       { transform: scale(1.1); background: var(--bg); }
+.icon-btn.edit:hover  { color: var(--terracotta); border-color: rgba(201,79,50,0.3); background: var(--terracotta-light); }
+.icon-btn.delete:hover{ color: #B44; border-color: rgba(180,60,60,0.25); background: #FEF1F1; }
+
+/* ── Empty state ── */
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3.5rem 1rem;
+}
+
+.empty-icon {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 16px;
+  opacity: 0.3;
+  color: var(--text-secondary);
+}
+
+.empty-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.empty-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  body            { padding: 1.5rem 1rem 3rem; }
+  .creation-card  { padding: 1.25rem 1rem 1rem; }
+  .notes-grid     { grid-template-columns: 1fr; }
+}
+
+
+body.dark-mode {
+  --bg: #121212;
+  --surface: #1e1e1e;
+  --border: rgba(255,255,255,0.08);
+  --border-focus: rgba(201,79,50,0.6);
+  --text-primary:#f5f5f5;
+  --text-secondary:#cfcfcf;
+  --text-muted:#9b9b9b;
+  --shadow-card:0 2px 12px rgba(0,0,0,.35);
+  --shadow-hover:0 8px 24px rgba(0,0,0,.45);
+}
+.theme-toggle{border:none;cursor:pointer;padding:10px 16px;border-radius:10px;background:var(--terracotta,#c94f32);color:white;font-family:inherit;font-size:14px;transition:all .2s ease;}
+.theme-toggle:hover{transform:translateY(-2px);}
