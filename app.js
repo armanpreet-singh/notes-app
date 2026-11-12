@@ -128,18 +128,24 @@ function createNoteCard(title, content) {
   article.style.setProperty('--accent', accent);
 
   article.innerHTML = `
-    <h2 class="note-card-title">${title}</h2>
-    <p class="note-card-content">${content}</p>
+    <h2 class="note-card-title"></h2>
+    <p class="note-card-content"></p>
     <footer class="note-card-footer">
       <span class="note-date">
         ${makeCalSVG()}
         ${formatDate(new Date())}
       </span>
       <div class="card-actions">
-        <button class="icon-btn edit"   aria-label="Edit ${title}">${makeEditSVG()}</button>
-        <button class="icon-btn delete" aria-label="Delete ${title}">${makeTrashSVG()}</button>
+        <button class="icon-btn edit" type="button">${makeEditSVG()}</button>
+        <button class="icon-btn delete" type="button">${makeTrashSVG()}</button>
       </div>
     </footer>`;
+
+  // Treat user-provided note text as text, never as HTML.
+  article.querySelector('.note-card-title').textContent = title;
+  article.querySelector('.note-card-content').textContent = content;
+  article.querySelector('.edit').setAttribute('aria-label', `Edit ${title}`);
+  article.querySelector('.delete').setAttribute('aria-label', `Delete ${title}`);
 
   attachCardListeners(article);
   return article;
