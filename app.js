@@ -11,6 +11,7 @@ const countEl      = document.getElementById('notes-count');
 const titleInput   = document.getElementById('note-title');
 const contentInput = document.getElementById('note-content');
 const addBtn       = document.getElementById('add-btn');
+const NOTES_STORAGE_KEY = 'notes-data';
 
 // Rotating accent colours for dynamically created cards
 const ACCENT_COLORS = [
@@ -31,6 +32,58 @@ function clearDefaultCards() {
   if (defaultsCleared) return;
   grid.querySelectorAll('.note-card[data-sample]').forEach(c => c.remove());
   defaultsCleared = true;
+}
+
+function loadSavedNotes() {
+  try {
+    const storedNotes = localStorage.getItem(NOTES_STORAGE_KEY);
+    if (storedNotes === null) return null;
+
+    const parsedNotes = JSON.parse(storedNotes);
+    if (!Array.isArray(parsedNotes)) return [];
+
+    return parsedNotes.filter(
+      (note) =>
+        note &&
+        typeof note === 'object' &&
+        !Array.isArray(note) &&
+        typeof note.title === 'string' &&
+        typeof note.content === 'string' &&
+        typeof note.createdAt === 'string' &&
+        !Number.isNaN(Date.parse(note.createdAt))
+    );
+  } catch (error) {
+    console.warn('Could not load saved notes.', error);
+    return null;
+  }
+}
+
+function persistNotes() {
+  const notes = Array.from(
+    grid.querySelectorAll('.note-card:not([data-sample])')
+  ).map((card) => ({
+    title: card.querySelector('.note-card-title').textContent,
+    content: card.querySelector('.note-card-content').textContent,
+    createdAt: card.dataset.createdAt,
+  }));
+
+  try {
+    localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(notes));
+  } catch (error) {
+    console.warn('Could not save notes to local storage.', error);
+  }
+}
+
+function restoreSavedNotes() {
+  const notes = loadSavedNotes();
+  if (notes === null) return;
+
+  // A stored empty array also means the user intentionally removed all notes.
+  clearDefaultCards();
+  notes.forEach((note) => {
+    grid.appendChild(createNoteCard(note.title, note.content, new Date(note.createdAt)));
+  });
+  updateCount();
 }
 
 function updateCount() {
@@ -106,7 +159,11 @@ function attachCardListeners(card) {
     card.style.transition = 'opacity 0.2s, transform 0.2s';
     card.style.opacity    = '0';
     card.style.transform  = 'scale(0.95)';
-    setTimeout(() => { card.remove(); updateCount(); }, 200);
+    setTimeout(() => {
+      card.remove();
+      updateCount();
+      persistNotes();
+    }, 200);
   });
 
   card.querySelector('.edit').addEventListener('click', () => {
@@ -118,12 +175,13 @@ function attachCardListeners(card) {
   });
 }
 
-function createNoteCard(title, content) {
+function createNoteCard(title, content, createdAt = new Date()) {
   const cardCount = grid.querySelectorAll('.note-card').length;
   const accent    = ACCENT_COLORS[cardCount % ACCENT_COLORS.length];
 
   const article = document.createElement('article');
   article.className = 'note-card';
+  article.dataset.createdAt = createdAt.toISOString();
   article.setAttribute('role', 'listitem');
   article.style.setProperty('--accent', accent);
 
@@ -133,7 +191,7 @@ function createNoteCard(title, content) {
     <footer class="note-card-footer">
       <span class="note-date">
         ${makeCalSVG()}
-        ${formatDate(new Date())}
+        ${formatDate(createdAt)}
       </span>
       <div class="card-actions">
         <button class="icon-btn edit" type="button">${makeEditSVG()}</button>
@@ -167,6 +225,7 @@ function saveNote() {
 
   const card = createNoteCard(title || 'Untitled', content || '');
   grid.insertBefore(card, grid.firstChild);
+  persistNotes();
 
   titleInput.value   = '';
   contentInput.value = '';
@@ -202,6 +261,8 @@ grid.querySelectorAll('.note-card').forEach(card => {
   card.dataset.sample = 'true';
   attachCardListeners(card);
 });
+
+restoreSavedNotes();
 
 
 const themeToggle = document.getElementById("theme-toggle");
