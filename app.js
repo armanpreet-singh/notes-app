@@ -162,7 +162,7 @@ function attachCardListeners(card) {
     setTimeout(() => {
       card.remove();
       updateCount();
-      persistNotes();
+      if (!card.dataset.sample) persistNotes();
     }, 200);
   });
 
